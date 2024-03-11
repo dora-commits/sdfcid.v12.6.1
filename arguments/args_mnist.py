@@ -1,15 +1,15 @@
 # TODO : Arguments
 args = {}
-args['dim_h']                 = 64                    # factor controlling size of hidden layers
-args['n_channel']             = 1                     # number of channels in the input data
+args['dim_h']                 = 64                    
+args['n_channel']             = 1                     
 args['n_z']                   = 300                   # number of dimensions in latent space.
-args['lr']                    = 0.0002                # learning rate for Adam optimizer .0001
-args['epochs']                = 50                    # how many epochs to run for
+args['lr']                    = 0.0002                # learning rate for Adam optimizer .0002
+args['epochs']                = 50                    
 args['batch_size']            = 100                   # batch size for SGD, Adam
-args['save']                  = True                  # save weights at each epoch of training if True
-args['train']                 = True                  # train networks if True, else load networks from
+args['save']                  = True                  
+args['train']                 = True                  
 args['resnet_learning_rate']  = 0.001                 # learning rate for Adam optimizer .001 with resnet18
-args['resnet_num_epochs']     = 30                    # how many epochs to run for
+args['resnet_num_epochs']     = 30                    
 args['oversampling_method']   = 'SMOTE'               # Oversampling Algorithm
 args['data_name']             = 'MNIST'               # Dataset
 args['header']                = True
