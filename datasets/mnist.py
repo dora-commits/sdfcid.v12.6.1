@@ -3,7 +3,7 @@
 # Normalize in range [-1, 1]
 transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor(),torchvision.transforms.Normalize((0.5,), (0.5,))])
 
-# Normalize in range [0, 1] Default
+# Normalize in range [0, 1] 
 # transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor(),])
 
 if (args['data_name'] == 'MNIST'):
