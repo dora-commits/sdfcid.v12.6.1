@@ -1,13 +1,13 @@
 def train_AE(dataset_torch, fold_id, data_name):
+  torch.autograd.set_detect_anomaly(True)
   encoder = Encoder(args)
   decoder = Decoder(args)
 
   device = 'cuda' if torch.cuda.is_available() else 'cpu'
   print(device)
+
   decoder = decoder.to(device)
   encoder = encoder.to(device)
-
-  train_on_gpu = torch.cuda.is_available()
 
   # decoder loss function
   criterion = nn.MSELoss()
@@ -32,65 +32,31 @@ def train_AE(dataset_torch, fold_id, data_name):
       # enc_scheduler = torch.optim.lr_scheduler.StepLR(enc_optim, step_size=30, gamma=0.5)
       # dec_scheduler = torch.optim.lr_scheduler.StepLR(dec_optim, step_size=30, gamma=0.5)
 
+
       for epoch in range(args['epochs']):                                       # number of training : 100
           train_loss = 0.0
-          tmse_loss = 0.0
-          tdiscr_loss = 0.0
 
           encoder.train()                                                       # train for one epoch -- set nets to train mode
           decoder.train()
+
           for images,labs in tqdm(train_loader):
-              encoder.zero_grad()                                               # zero gradients for each batch
-              decoder.zero_grad()
 
-              images, labs = images.to(device), labs.to(device)
-              labsn = labs.detach().cpu().numpy()
+            encoder.zero_grad()                                                 # zero gradients for each batch
+            decoder.zero_grad()
 
-              z_hat = encoder(images)                                           # encode
-              x_hat = decoder(z_hat)                                            # decoder outputs tanh [-1,1]
-              mse = criterion(x_hat,images)                                     # loss
+            images = images.to(device)
 
-              tc = np.random.randint(10)                                        # class [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            z_hat = encoder(images)
+            x_hat = decoder(z_hat)
 
-              xbeg = dec_x[dec_y == tc]                                         # image : only one class
-              ybeg = dec_y[dec_y == tc]                                         # label : following above image
+            train_recon_loss = criterion(x_hat, images)
 
-              xlen = len(xbeg)                                                  # 4500, 2000, 1000, 800, 600, 500, 400, 250, 150, 80
-              nsamp = min(xlen, 100)                                            # 100 , 100 , 100 , 100, 100, 100, 100, 100, 60, 40 (number of sample)
+            train_recon_loss.backward()
 
-              ind = np.random.choice(list(range(len(xbeg))),nsamp,replace=False)# index (100 indexes)
-              xclass = xbeg[ind]                                                # tuple (images)
-              yclass = ybeg[ind]                                                # tuple (labels)
+            enc_optim.step()
+            dec_optim.step()
 
-              xclen = len(xclass)                                               # length of xclass (100/60/40)
-              xcminus = np.arange(1,xclen)                                      # arrange like : [1, 2, ..., 100]
-              xcplus = np.append(xcminus,0)                                     # append 0 into above list [..., 0]
-
-              xcnew = np.array(xclass)                                          # Fix warning : converting list of numpy array to single numpy array create a single numpy array from the list of numpy arrays
-              xcnew = xcnew[[xcplus], :]                                        # apply indexing
-              xcnew = xcnew.reshape(xcnew.shape[1],xcnew.shape[2],xcnew.shape[3],xcnew.shape[4])
-              xcnew = torch.Tensor(xcnew)
-              xcnew = xcnew.to(device)
-
-              xclass = torch.Tensor(xclass)                                     # encode xclass to feature space
-              xclass = xclass.to(device)
-              xclass = encoder(xclass)
-              xclass = xclass.detach().cpu().numpy()
-              xc_enc = (xclass[[xcplus],:])
-              xc_enc = np.squeeze(xc_enc)
-              xc_enc = torch.Tensor(xc_enc)
-              xc_enc = xc_enc.to(device)
-
-              ximg = decoder(xc_enc)                                            # decode xc_enc
-              mse2 = criterion(ximg,xcnew)
-
-              comb_loss = mse2 + mse
-              comb_loss.backward()
-
-              enc_optim.step()
-              dec_optim.step()
-
-              train_loss += comb_loss.item()
+            train_loss += train_recon_loss.item()
 
           train_loss = train_loss/len(train_loader)
 
