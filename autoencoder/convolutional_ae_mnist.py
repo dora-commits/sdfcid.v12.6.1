@@ -6,6 +6,8 @@ class Encoder(nn.Module):
         self.dim_h = args['dim_h']
         self.n_z = args['n_z']
 
+        # convolutional filters organized according to the popular DCGAN
+        # (Radford et. al., 2015) framework, excellent for image data
         self.conv = nn.Sequential(
             nn.Conv2d(self.n_channel, self.dim_h, 4, 2, 1, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
@@ -28,6 +30,7 @@ class Encoder(nn.Module):
         x = self.fc(x)
         return x
 
+
 class Decoder(nn.Module):
     def __init__(self, args):
         super(Decoder, self).__init__()
@@ -39,8 +42,10 @@ class Decoder(nn.Module):
         # first layer is fully connected
         self.fc = nn.Sequential(
             nn.Linear(self.n_z, self.dim_h * 8 * 7 * 7),
-            nn.ReLU())
+            nn.ReLU()
+        )
 
+        # deconvolutional filters, essentially the inverse of convolutional filters
         self.deconv = nn.Sequential(
             nn.ConvTranspose2d(self.dim_h * 8, self.dim_h * 4, 4),
             nn.BatchNorm2d(self.dim_h * 4),
@@ -48,8 +53,9 @@ class Decoder(nn.Module):
             nn.ConvTranspose2d(self.dim_h * 4, self.dim_h * 2, 4),
             nn.BatchNorm2d(self.dim_h * 2),
             nn.ReLU(True),
-            nn.ConvTranspose2d(self.dim_h * 2, self.n_channel, 4, stride=2),
-            nn.Tanh())
+            nn.ConvTranspose2d(self.dim_h * 2, 1, 4, stride=2),
+            nn.Tanh()
+        )
 
     def forward(self, x):
         x = self.fc(x)
