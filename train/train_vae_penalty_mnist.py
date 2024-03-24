@@ -29,8 +29,6 @@ def train_AE(dataset_torch, fold_id, data_name):
       enc_optim = torch.optim.Adam(encoder.parameters(), lr = args['lr'])       # optimization : Adam + learning rate = 0.0001
       dec_optim = torch.optim.Adam(decoder.parameters(), lr = args['lr'])
 
-      # enc_scheduler = torch.optim.lr_scheduler.StepLR(enc_optim, step_size=30, gamma=0.5)
-      # dec_scheduler = torch.optim.lr_scheduler.StepLR(dec_optim, step_size=30, gamma=0.5)
 
       for epoch in range(args['epochs']):                                       # number of training : 100
           train_loss = 0.0
