@@ -33,9 +33,9 @@ def train_AE(dataset_torch, fold_id, data_name):
       dec_optim = torch.optim.Adam(decoder.parameters(), lr = args['lr'])
       dis_optim = torch.optim.Adam(discriminator.parameters(), lr = args['lr'])
 
-      enc_scheduler = torch.optim.lr_scheduler.StepLR(enc_optim, step_size=30, gamma=0.5)
-      dec_scheduler = torch.optim.lr_scheduler.StepLR(dec_optim, step_size=30, gamma=0.5)
-      dis_scheduler = torch.optim.lr_scheduler.StepLR(dis_optim, step_size=30, gamma=0.5)
+    #   enc_scheduler = torch.optim.lr_scheduler.StepLR(enc_optim, step_size=30, gamma=0.5)
+    #   dec_scheduler = torch.optim.lr_scheduler.StepLR(dec_optim, step_size=30, gamma=0.5)
+    #   dis_scheduler = torch.optim.lr_scheduler.StepLR(dis_optim, step_size=30, gamma=0.5)
 
       # one and -one allow us to control descending / ascending gradient descent
       one = torch.tensor(1, dtype=torch.float)
