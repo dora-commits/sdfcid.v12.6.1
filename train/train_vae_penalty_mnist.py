@@ -26,7 +26,7 @@ def train_AE(dataset_torch, fold_id, data_name):
   t0 = time.time()
 
   if args['train']:
-      enc_optim = torch.optim.Adam(encoder.parameters(), lr = args['lr'])       # optimization : Adam + learning rate = 0.0001
+      enc_optim = torch.optim.Adam(encoder.parameters(), lr = args['lr'])       # optimization : Adam + learning rate = 0.0002
       dec_optim = torch.optim.Adam(decoder.parameters(), lr = args['lr'])
 
 
