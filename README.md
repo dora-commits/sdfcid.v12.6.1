@@ -1,2 +1,2 @@
-![alt text](docs/deepim.png)
+![alt text](docs/kid.jpg)
 
